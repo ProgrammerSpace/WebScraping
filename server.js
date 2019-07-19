@@ -1,29 +1,50 @@
+var express = require("express");
+var exphbs = require("express-handlebars");
 
-var cheerio = require("cheerio");
+var mongoose = require("mongoose");
+
 var axios = require("axios");
+var cheerio = require("cheerio");
 
-function Article(picture, headline, description, link) {
-    this.picture = picture;
-    this.headline = headline;
-    this.description = description;
-    this.link = link;
-}
+var db = require("./models");
+var PORT = process.env.PORT || 3000;
 
-axios.get("https://www.cnet.com/topics/tech-industry/").then(function (response) {
-    var $ = cheerio.load(response.data);
-    var results = {};
+var app = express();
 
-    $(".asset").each(function (i, element) {
-        var picture, h2, p, link;
-        $(".assetThumb").each(function (j, element) {
-            picture = $(element).find("img").attr("src");
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static("public"));
+
+// Connect to the Mongo DB
+mongoose.connect("mongodb://localhost/webscraping", { useNewUrlParser: true });
+
+app.get("/scrape", function (req, res) {
+    axios.get("https://www.cnet.com/topics/tech-industry/").then(function (response) {
+        var $ = cheerio.load(response.data);
+        var result = {};
+
+        $(".asset").each(function (i, element) {
+            $(".assetBody").each(function (j, element) {
+                result.title = $(element).find("h2").text();
+                result.desc = $(element).find("p").text();
+                result.link = "https://www.cnet.com" + $(element).find("a").attr("href");
+            });
+            $(".assetThumb").each(function (j, element) {
+                result.picture = $(element).find("img").attr("src");
+            });
+            db.Article.create(result)
+                .then(function (dbArticle) {
+                    console.log(dbArticle);
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
         });
-        $(".assetBody").each(function (j, element) {
-            h2 = $(element).find("h2").text();
-            p = $(element).find("p").text();
-            link = "https://www.cnet.com" + $(element).find("a").attr("href");
-        });
-        var newArticle = new Article(picture, h2, p, link);
-        results[i] = newArticle;
+        res.send("Scrape Complete");
     });
+});
+
+// Listen on port
+app.listen(PORT, function () {
+    console.log("App running on port 3000!");
 });
