@@ -29,8 +29,7 @@ var uri = process.env.MONGODB_URI || "mongodb://localhost/webscraping";
 mongoose.connect(uri);
 
 app.get("/", function (req, res) {
-    // res.redirect("/scrape");
-    res.send("Welcome");
+    res.redirect("/scrape");
 });
 
 app.get("/scrape", function (req, res) {
@@ -54,16 +53,13 @@ app.get("/scrape", function (req, res) {
         });
 
     });
-    // res.redirect("/articles");
-    res.send("Scrape complete");
+    res.redirect("/articles");
 });
 
 app.get("/articles", function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
             res.render("index", { hbsObj: dbArticle });
-            console.log("Data Retrieved");
-            // res.json(dbArticle);
         })
         .catch(function (err) {
             res.json(err);
