@@ -29,7 +29,8 @@ var uri = process.env.MONGODB_URI || "mongodb://localhost/webscraping";
 mongoose.connect(uri);
 
 app.get("/", function (req, res) {
-    res.redirect("/scrape");
+    // res.redirect("/scrape");
+    res.send("Welcome");
 });
 
 app.get("/scrape", function (req, res) {
@@ -54,7 +55,8 @@ app.get("/scrape", function (req, res) {
         });
 
     });
-    res.redirect("/articles");
+    // res.redirect("/articles");
+    res.send("Scrape complete");
 });
 
 app.get("/articles", function (req, res) {
