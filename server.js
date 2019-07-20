@@ -63,6 +63,7 @@ app.get("/articles", function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
             // res.render("index", { hbsObj: dbArticle });
+            console.log("Data Retrieved");
             res.json(dbArticle);
         })
         .catch(function (err) {
