@@ -29,14 +29,7 @@ var uri = process.env.MONGODB_URI || "mongodb://localhost/webscraping";
 mongoose.connect(uri, { useNewUrlParser: true });
 
 app.get("/", function (req, res) {
-    // res.redirect("/scrape");
-    db.Article.find({})
-        .then(function (dbArticle) {
-            res.render("index", { hbsObj: dbArticle });
-        })
-        .catch(function (err) {
-            res.json(err);
-        });
+    res.redirect("/scrape");
 });
 
 app.get("/scrape", function (req, res) {
@@ -61,7 +54,7 @@ app.get("/scrape", function (req, res) {
         });
 
     });
-    // res.redirect("/articles");
+    res.redirect("/articles");
 });
 
 app.get("/articles", function (req, res) {
