@@ -26,7 +26,7 @@ app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
 var uri = process.env.MONGODB_URI || "mongodb://localhost/webscraping";
-mongoose.connect(uri, { useNewUrlParser: true });
+mongoose.connect(uri);
 
 app.get("/", function (req, res) {
     res.redirect("/scrape");

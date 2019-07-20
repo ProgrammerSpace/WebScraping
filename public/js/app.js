@@ -33,6 +33,9 @@ $(document).on("click", "#showNotes", function () {
         url: "/articles/" + id
     }).then(function (data) {
         console.log(data);
+        if (data.note.length == 0) {
+            $("#notes-" + id).html("No comments yet!\nYou want to add one? Click on headline.");
+        }
         for (i in data.note) {
             let newNote = $("<li>");
             let name = $("<h6>");
