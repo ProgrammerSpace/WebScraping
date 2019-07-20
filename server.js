@@ -2,6 +2,7 @@ var express = require("express");
 var exphbs = require("express-handlebars");
 
 var mongoose = require("mongoose");
+mongoose.set('useFindAndModify', false);
 
 var axios = require("axios");
 var cheerio = require("cheerio");
@@ -26,6 +27,10 @@ app.set("view engine", "handlebars");
 // Connect to the Mongo DB
 mongoose.connect("mongodb://localhost/webscraping", { useNewUrlParser: true });
 
+app.get("/", function (req, res) {
+    res.redirect("/scrape");
+});
+
 app.get("/scrape", function (req, res) {
     axios.get("https://www.cnet.com/topics/tech-industry/").then(function (response) {
         var $ = cheerio.load(response.data);
@@ -48,13 +53,42 @@ app.get("/scrape", function (req, res) {
         });
 
     });
-    res.send("Scrape Complete");
+    res.redirect("/articles");
 });
 
 app.get("/articles", function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
             res.render("index", { hbsObj: dbArticle });
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
+});
+
+app.get("/articles/:id", function (req, res) {
+    db.Article.findOne({
+        _id: req.params.id
+    })
+        .populate("note")
+        .then(function (dbArticle) {
+            res.json(dbArticle);
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
+});
+
+app.post("/articles/:id", function (req, res) {
+    console.log(req.body);
+    db.Note.create(req.body)
+        .then(function (dbNote) {
+            return db.Article.findOneAndUpdate({
+                _id: req.params.id
+            }, { $push: { "note": dbNote._id } }, { new: true });
+        })
+        .then(function (dbUser) {
+            res.json(dbUser);
         })
         .catch(function (err) {
             res.json(err);

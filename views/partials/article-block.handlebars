@@ -1,8 +1,19 @@
-<div class="card">
-    <img src=" {{picture}}" class="card-img-top thumbnail" height="200px" width="200px" alt="...">
-    <div class="card-title">
-        <h3>{{title}}</h3>
+<div class="row">
+    <div class="col-md-3">
+        <img src=" {{picture}}" class="thumbnail" height="200px" width="200px" alt="...">
+    </div>
+    <div class="col-md-7">
+        <h3 class="pt-5" data-id="{{_id}}">{{title}}</h3>
         <p>{{desc}}</p>
-        <a href="{{link}}">see more..</a>
+        <a href="{{link}}">{{link}}</a><br>
+        <div class="row mt-3">
+            <ul id="notes-{{_id}}">
+
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <button id="showNotes" data-id="{{_id}}" class="btn btn-primary">Expand</button>
     </div>
 </div>
+<hr>
