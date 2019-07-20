@@ -45,8 +45,8 @@ app.get("/scrape", function (req, res) {
             console.log(result);
 
             // Remove all document
-            db.Article.remove({});
             db.Note.remove({});
+            db.Article.remove({});
 
             // Re-create new documents
             db.Article.create(result)
