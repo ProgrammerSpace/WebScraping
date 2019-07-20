@@ -15,6 +15,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
+app.engine(
+    "handlebars",
+    exphbs({
+        defaultLayout: "main"
+    })
+);
+app.set("view engine", "handlebars");
+
 // Connect to the Mongo DB
 mongoose.connect("mongodb://localhost/webscraping", { useNewUrlParser: true });
 
@@ -23,25 +31,34 @@ app.get("/scrape", function (req, res) {
         var $ = cheerio.load(response.data);
         var result = {};
 
-        $(".asset").each(function (i, element) {
-            $(".assetBody").each(function (j, element) {
-                result.title = $(element).find("h2").text();
-                result.desc = $(element).find("p").text();
-                result.link = "https://www.cnet.com" + $(element).find("a").attr("href");
-            });
-            $(".assetThumb").each(function (j, element) {
-                result.picture = $(element).find("img").attr("src");
-            });
+        $(".assetThumb").each(function (j, element) {
+            result.picture = $(element).children("a").children("figure").children("img").attr("src");
+            result.title = $(element).siblings(".assetBody").children("a").children("h2").text();
+            result.desc = $(element).siblings(".assetBody").children("a").children("p").text();
+            result.link = "https://www.cnet.com" + $(element).siblings(".assetBody").children("a").attr("href");
+            console.log(result);
             db.Article.create(result)
                 .then(function (dbArticle) {
-                    console.log(dbArticle);
+                    console.log("Database Updated!");
+                    articles = dbArticle;
                 })
                 .catch(function (err) {
                     console.log(err);
                 });
         });
-        res.send("Scrape Complete");
+
     });
+    res.send("Scrape Complete");
+});
+
+app.get("/articles", function (req, res) {
+    db.Article.find({})
+        .then(function (dbArticle) {
+            res.render("index", { hbsObj: dbArticle });
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
 });
 
 // Listen on port
