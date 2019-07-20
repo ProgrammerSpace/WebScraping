@@ -29,7 +29,13 @@ var uri = process.env.MONGODB_URI || "mongodb://localhost/webscraping";
 mongoose.connect(uri);
 
 app.get("/", function (req, res) {
-    res.redirect("/scrape");
+    db.Article.find({})
+        .then(function (dbArticle) {
+            res.render("index", { hbsObj: dbArticle });
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
 });
 
 app.get("/scrape", function (req, res) {
@@ -44,11 +50,6 @@ app.get("/scrape", function (req, res) {
             result.link = "https://www.cnet.com" + $(element).siblings(".assetBody").children("a").attr("href");
             console.log(result);
 
-            // Remove all document
-            db.Note.remove({});
-            db.Article.remove({});
-
-            // Re-create new documents
             db.Article.create(result)
                 .then(function (dbArticle) {
                     console.log("Database Updated!");
