@@ -43,6 +43,7 @@ app.get("/scrape", function (req, res) {
             result.desc = $(element).siblings(".assetBody").children("a").children("p").text();
             result.link = "https://www.cnet.com" + $(element).siblings(".assetBody").children("a").attr("href");
             console.log(result);
+            db.Article.dropCollection();
             db.Article.create(result)
                 .then(function (dbArticle) {
                     console.log("Database Updated!");
