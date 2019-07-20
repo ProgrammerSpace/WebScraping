@@ -47,7 +47,6 @@ app.get("/scrape", function (req, res) {
             db.Article.create(result)
                 .then(function (dbArticle) {
                     console.log("Database Updated!");
-                    articles = dbArticle;
                 })
                 .catch(function (err) {
                     console.log(err);
@@ -62,8 +61,8 @@ app.get("/scrape", function (req, res) {
 app.get("/articles", function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
-            // res.render("index", { hbsObj: dbArticle });
-            console.log("Data Retrieved");
+            res.render("index", { hbsObj: dbArticle });
+            // console.log("Data Retrieved");
             res.json(dbArticle);
         })
         .catch(function (err) {
