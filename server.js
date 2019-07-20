@@ -62,7 +62,8 @@ app.get("/scrape", function (req, res) {
 app.get("/articles", function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
-            res.render("index", { hbsObj: dbArticle });
+            // res.render("index", { hbsObj: dbArticle });
+            res.json(dbArticle);
         })
         .catch(function (err) {
             res.json(err);
